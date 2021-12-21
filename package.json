@@ -1,0 +1,26 @@
+{
+  "name": "bilibili-live-auto-danmaku",
+  "version": "0.1.0",
+  "description": "给B站直播用的弹幕助手，自动感谢礼物",
+  "main": "dist/index.js",
+  "author": "xys20071111",
+  "license": "MIT",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "dependencies": {
+    "@types/form-data": "^2.5.0",
+    "form-data": "^4.0.0",
+    "ws": "^8.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^16.11.13",
+    "@types/ws": "^8.2.2",
+    "typescript": "^4.5.4"
+  },
+  "scripts": {
+    "start": "tsc && node . config.json"
+  }
+}
