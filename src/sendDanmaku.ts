@@ -18,7 +18,7 @@ export interface DanmakuStruct {
 }
 
 export default function sendDanmake(danmaku: DanmakuStruct) {
-  if (danmaku.msg.length > 15) {
+  if (danmaku.msg.length > 19) {
     sendDanmake({
       msg: danmaku.msg.slice(0, 15)
     })
