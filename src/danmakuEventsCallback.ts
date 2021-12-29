@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Console } from 'console'
 import * as fs from 'fs'
 import config from './config';
@@ -10,16 +11,11 @@ let logger = new Console({
   stdout: logFile
 });
 
-const coldDown = config.cold_down_time
-let lastColdDonw = 0
-
 export function receiveGift(data: any) {
   logger.log(`${getTimeString()} ${data.uname} 投喂了${data.super_gift_num}个 ${data.giftName} 价值${data.price / 1000 * data.super_gift_num}元`)
-  if (lastColdDonw === 0 || Date.now() / 1000 - lastColdDonw > coldDown) {
-    sendDanmake({
-      msg: config.danmakus.gift.replace('{name}', data.uname).replace('{gift}', data.giftName)
-    })
-  }
+  sendDanmake({
+    msg: config.danmakus.gift.replace('{name}', data.uname).replace('{gift}', data.giftName)
+  })
 }
 
 export function onTotalGift(data: any) {
@@ -52,8 +48,8 @@ export function onGraud(data: any) {
   logger.log(`${getTimeString()} ${data.username}:${data.uid} 购买了 ${data.gift_name}`)
   sendDanmake({
     msg: config.danmakus.guard
-              .replace('{name}', data.username)
-              .replace('{type}', data.gift_name) //`感谢 ${data.username} 开通了 ${data.gift_name}`
+      .replace('{name}', data.username)
+      .replace('{type}', data.gift_name) //`感谢 ${data.username} 开通了 ${data.gift_name}`
   })
 }
 

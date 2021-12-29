@@ -7,6 +7,7 @@ import * as https from 'https';
 import { EventEmitter } from 'events';
 import * as zlib from 'zlib';
 import { config } from './config';
+import { AuthedScoketSet } from './APIServer'
 
 enum DANMAKU_PROTOCOL {
   JSON = 0,
@@ -111,6 +112,9 @@ class DanmakuReceiver extends EventEmitter {
           case DANMAKU_PROTOCOL.JSON:
             jsonData = JSON.parse(packetPayload.toString('utf-8'));
             this.emit(jsonData.cmd, jsonData.data);
+            AuthedScoketSet.forEach((socket: WebSocket) => {
+              socket.send(JSON.stringify({cmd: jsonData.cmd, data: jsonData.data}))
+            })
             break;
           case DANMAKU_PROTOCOL.BROTLI:
             zlib.brotliDecompress(packetPayload, (err, result) => {
@@ -124,6 +128,9 @@ class DanmakuReceiver extends EventEmitter {
                 const jsonString = packetData.toString('utf8');
                 const data = JSON.parse(jsonString);
                 this.emit(data.cmd, (data.info || data.data));
+                AuthedScoketSet.forEach((socket: WebSocket) => {
+                  socket.send(JSON.stringify({cmd: data.cmd, data: data.info || data.data}))
+                })
                 offset += length;
               }
             });

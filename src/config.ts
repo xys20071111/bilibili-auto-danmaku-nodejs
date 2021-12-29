@@ -17,12 +17,17 @@ interface Credential {
   uid: number
 }
 
+interface api_config {
+  token: string
+  port: number
+}
+
 interface ConfigStruct {
   room_id: number | string
   verify: Credential
   danmakus: DanmakuTemplate
-  cold_down_time: number
   advertiseing_cold_down: number
+  api: api_config
 }
 
 const config: ConfigStruct = JSON.parse(readFileSync(process.argv[2]).toString('utf8'))
