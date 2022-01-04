@@ -28,14 +28,15 @@ const cookie = `buvid3=${config.verify.buvid3}; SESSDATA=${config.verify.sessdat
 
 class DanmakuReceiver extends EventEmitter {
   private socket: WebSocket | null = null;
-
+  private roomId: number | string;
   constructor(roomId: number | string) {
     super();
-    this.run(roomId);
+    this.roomId = roomId
+    this.connect();
   }
 
-  private async run(roomId: number | string) {
-    const request = https.request(`https://api.live.bilibili.com/room/v1/Danmu/getConf?room_id=${roomId}&platform=pc&player=web`, {
+  public async connect() {
+    const request = https.request(`https://api.live.bilibili.com/room/v1/Danmu/getConf?room_id=${this.roomId}&platform=pc&player=web`, {
       method: 'GET',
       headers: {
         cookie: cookie, 
@@ -58,7 +59,7 @@ class DanmakuReceiver extends EventEmitter {
         this.socket.on('close', () => { console.log('closed'); });
         this.socket.on('open', async () => {
           const data = JSON.stringify({
-            roomid: parseInt(roomId.toString(), 10), protover: 3, platform: 'web', uid: config.verify.uid, key: parsedData.data.token,
+            roomid: parseInt(this.roomId.toString(), 10), protover: 3, platform: 'web', uid: config.verify.uid, key: parsedData.data.token,
           });
           const authPacket = this.generatePacket(1, 7, data);
           if (this.socket) {
@@ -147,6 +148,7 @@ class DanmakuReceiver extends EventEmitter {
   public close(): void {
     if (this.socket) {
       this.socket.close();
+      this.emit('close');
     }
   }
 }
