@@ -31,8 +31,7 @@ class DanmakuReceiver extends EventEmitter {
   private roomId: number | string;
   constructor(roomId: number | string) {
     super();
-    this.roomId = roomId
-    this.connect();
+    this.roomId = roomId;
   }
 
   public async connect() {
