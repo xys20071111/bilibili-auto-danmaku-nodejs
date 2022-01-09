@@ -26,6 +26,7 @@ interface ConfigStruct {
   room_id: number | string
   verify: Credential
   danmakus: DanmakuTemplate
+  cold_down_time: number
   advertiseing_cold_down: number
   api: api_config
 }
