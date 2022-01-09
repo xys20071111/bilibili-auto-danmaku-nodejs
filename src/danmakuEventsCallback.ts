@@ -5,6 +5,7 @@ import sendDanmake from './sendDanmaku';
 import { getTimeString } from './utils/time';
 
 let logFile = fs.createWriteStream(`${getTimeString()}-${config.room_id}.log`)
+const thanksColdDownSet = new Set<string>();
 
 let logger = new Console({
   stdout: logFile
@@ -14,12 +15,17 @@ const coldDown = config.cold_down_time
 let lastColdDonw = 0
 
 export function receiveGift(data: any) {
+  if(thanksColdDownSet.has(data.uname)){
+    return
+  }
   logger.log(`${getTimeString()} ${data.uname} 投喂了${data.super_gift_num}个 ${data.giftName} 价值${data.price / 1000 * data.super_gift_num}元`)
   if (lastColdDonw === 0 || Date.now() / 1000 - lastColdDonw > coldDown) {
     sendDanmake({
       msg: config.danmakus.gift.replace('{name}', data.uname).replace('{gift}', data.giftName)
     })
   }
+  thanksColdDownSet.add(data.uname)
+  setTimeout(() => {thanksColdDownSet.delete(data.uname)}, config.cold_down_time)
 }
 
 export function onTotalGift(data: any) {

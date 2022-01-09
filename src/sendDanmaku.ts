@@ -4,7 +4,6 @@ import * as form from 'form-data'
 
 const cookie = `buvid3=${config.verify.buvid3}; SESSDATA=${config.verify.sessdata}; bili_jct=${config.verify.csrf};`
 
-
 export interface DanmakuStruct {
   color?: number
   bubble?: number
