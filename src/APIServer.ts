@@ -12,7 +12,7 @@ const AuthedScoketSet = new Set<WebSocket>()
 const APIMsgHandler = new EventEmitter()
 
 APIMsgHandler.on('AUTH', (socket: WebSocket, data: string) => {
-  if(data === config.api.token) {
+  if(data === config.api.token && !AuthedScoketSet.has(socket)) {
     AuthedScoketSet.add(socket)
   }
 })
