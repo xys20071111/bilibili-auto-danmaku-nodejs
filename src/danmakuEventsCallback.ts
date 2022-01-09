@@ -11,19 +11,14 @@ let logger = new Console({
   stdout: logFile
 });
 
-const coldDown = config.cold_down_time
-let lastColdDonw = 0
-
 export function receiveGift(data: any) {
   if(thanksColdDownSet.has(data.uname)){
     return
   }
   logger.log(`${getTimeString()} ${data.uname} 投喂了${data.super_gift_num}个 ${data.giftName} 价值${data.price / 1000 * data.super_gift_num}元`)
-  if (lastColdDonw === 0 || Date.now() / 1000 - lastColdDonw > coldDown) {
-    sendDanmake({
-      msg: config.danmakus.gift.replace('{name}', data.uname).replace('{gift}', data.giftName)
-    })
-  }
+  sendDanmake({
+    msg: config.danmakus.gift.replace('{name}', data.uname).replace('{gift}', data.giftName)
+  })
   thanksColdDownSet.add(data.uname)
   setTimeout(() => {thanksColdDownSet.delete(data.uname)}, config.cold_down_time)
 }
