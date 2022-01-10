@@ -6,6 +6,10 @@
         "buvid3": "buvid3",
         "uid":1919810
     },
+    "api": {
+        "token": "crnmsmshsa",
+        "port": 7788
+    },
     "cold_down_time": 10,
     "danmakus": {
         "live_start": "直播开始啦，来了来了",

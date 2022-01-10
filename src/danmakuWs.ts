@@ -7,6 +7,7 @@ import * as https from 'https';
 import { EventEmitter } from 'events';
 import * as zlib from 'zlib';
 import { config } from './config';
+import { AuthedScoketSet } from './APIServer'
 
 enum DANMAKU_PROTOCOL {
   JSON = 0,
@@ -27,14 +28,14 @@ const cookie = `buvid3=${config.verify.buvid3}; SESSDATA=${config.verify.sessdat
 
 class DanmakuReceiver extends EventEmitter {
   private socket: WebSocket | null = null;
-
+  private roomId: number | string;
   constructor(roomId: number | string) {
     super();
-    this.run(roomId);
+    this.roomId = roomId;
   }
 
-  private async run(roomId: number | string) {
-    const request = https.request(`https://api.live.bilibili.com/room/v1/Danmu/getConf?room_id=${roomId}&platform=pc&player=web`, {
+  public async connect() {
+    const request = https.request(`https://api.live.bilibili.com/room/v1/Danmu/getConf?room_id=${this.roomId}&platform=pc&player=web`, {
       method: 'GET',
       headers: {
         cookie: cookie, 
@@ -57,7 +58,7 @@ class DanmakuReceiver extends EventEmitter {
         this.socket.on('close', () => { console.log('closed'); });
         this.socket.on('open', async () => {
           const data = JSON.stringify({
-            roomid: parseInt(roomId.toString(), 10), protover: 3, platform: 'web', uid: config.verify.uid, key: parsedData.data.token,
+            roomid: parseInt(this.roomId.toString(), 10), protover: 3, platform: 'web', uid: config.verify.uid, key: parsedData.data.token,
           });
           const authPacket = this.generatePacket(1, 7, data);
           if (this.socket) {
@@ -111,6 +112,9 @@ class DanmakuReceiver extends EventEmitter {
           case DANMAKU_PROTOCOL.JSON:
             jsonData = JSON.parse(packetPayload.toString('utf-8'));
             this.emit(jsonData.cmd, jsonData.data);
+            AuthedScoketSet.forEach((socket: WebSocket) => {
+              socket.send(JSON.stringify({cmd: jsonData.cmd, data: jsonData.data}))
+            })
             break;
           case DANMAKU_PROTOCOL.BROTLI:
             zlib.brotliDecompress(packetPayload, (err, result) => {
@@ -124,6 +128,9 @@ class DanmakuReceiver extends EventEmitter {
                 const jsonString = packetData.toString('utf8');
                 const data = JSON.parse(jsonString);
                 this.emit(data.cmd, (data.info || data.data));
+                AuthedScoketSet.forEach((socket: WebSocket) => {
+                  socket.send(JSON.stringify({cmd: data.cmd, data: data.info || data.data}))
+                })
                 offset += length;
               }
             });
@@ -140,6 +147,7 @@ class DanmakuReceiver extends EventEmitter {
   public close(): void {
     if (this.socket) {
       this.socket.close();
+      this.emit('close');
     }
   }
 }

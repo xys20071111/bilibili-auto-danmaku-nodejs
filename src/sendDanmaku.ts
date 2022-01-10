@@ -29,14 +29,22 @@ export default function sendDanmake(danmaku: DanmakuStruct) {
     return
   }
   danmaku.rnd = new Date().getTime()
-  danmaku.color = 5816798
-  danmaku.bubble = 0
-  danmaku.mode = 1
+  if (!danmaku.color) {
+    danmaku.color = 5816798
+  }
+  if (!danmaku.bubble) {
+    danmaku.bubble = 0
+  }
+  if (!danmaku.mode) {
+    danmaku.mode = 1
+  }
+  if (!danmaku.fontsize) {
+    danmaku.fontsize = 24
+  }
   danmaku.roomid = config.room_id as number
   danmaku.csrf = danmaku.csrf_token = config.verify.csrf
-  danmaku.fontsize = 24
   const data = new form.default()
-  for (let k in danmaku) {
+  for (const k in danmaku) {
     data.append(k, danmaku[k as keyof DanmakuStruct])
   }
   const req = request({

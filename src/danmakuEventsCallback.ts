@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Console } from 'console'
 import * as fs from 'fs'
 import config from './config';
@@ -53,8 +54,8 @@ export function onGraud(data: any) {
   logger.log(`${getTimeString()} ${data.username}:${data.uid} 购买了 ${data.gift_name}`)
   sendDanmake({
     msg: config.danmakus.guard
-              .replace('{name}', data.username)
-              .replace('{type}', data.gift_name) //`感谢 ${data.username} 开通了 ${data.gift_name}`
+      .replace('{name}', data.username)
+      .replace('{type}', data.gift_name) //`感谢 ${data.username} 开通了 ${data.gift_name}`
   })
 }
 
