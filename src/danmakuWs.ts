@@ -38,7 +38,7 @@ class DanmakuReceiver extends EventEmitter {
     const request = https.request(`https://api.live.bilibili.com/room/v1/Danmu/getConf?room_id=${this.roomId}&platform=pc&player=web`, {
       method: 'GET',
       headers: {
-        cookie: cookie, 
+        cookie: cookie,
         'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36',
         host: 'api.live.bilibili.com',
       },
@@ -55,7 +55,10 @@ class DanmakuReceiver extends EventEmitter {
         const parsedData = JSON.parse(rawData);
         this.socket = new WebSocket(`wss://${parsedData.data.host_server_list[0].host}:${parsedData.data.host_server_list[0].wss_port}/sub`);
         this.socket.on('message', this.danmakeProcesser.bind(this));
-        this.socket.on('close', () => { console.log('closed'); });
+        this.socket.on('close', () => { 
+          console.log('掉线了');
+          this.emit('close');
+        });
         this.socket.on('open', async () => {
           const data = JSON.stringify({
             roomid: parseInt(this.roomId.toString(), 10), protover: 3, platform: 'web', uid: config.verify.uid, key: parsedData.data.token,
@@ -113,7 +116,7 @@ class DanmakuReceiver extends EventEmitter {
             jsonData = JSON.parse(packetPayload.toString('utf-8'));
             this.emit(jsonData.cmd, jsonData.data);
             AuthedScoketSet.forEach((socket: WebSocket) => {
-              socket.send(JSON.stringify({cmd: jsonData.cmd, data: jsonData.data}))
+              socket.send(JSON.stringify({ cmd: jsonData.cmd, data: jsonData.data }))
             })
             break;
           case DANMAKU_PROTOCOL.BROTLI:
@@ -129,7 +132,7 @@ class DanmakuReceiver extends EventEmitter {
                 const data = JSON.parse(jsonString);
                 this.emit(data.cmd, (data.info || data.data));
                 AuthedScoketSet.forEach((socket: WebSocket) => {
-                  socket.send(JSON.stringify({cmd: data.cmd, data: data.info || data.data}))
+                  socket.send(JSON.stringify({ cmd: data.cmd, data: data.info || data.data }))
                 })
                 offset += length;
               }
