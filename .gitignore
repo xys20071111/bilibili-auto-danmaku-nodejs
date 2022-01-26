@@ -2,3 +2,5 @@ node_modules
 dist
 config.json
 *.log
+/plugins/*
+!/plugins/.gitkeep
