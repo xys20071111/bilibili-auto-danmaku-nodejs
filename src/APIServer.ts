@@ -32,7 +32,7 @@ APIMsgHandler.on('SEND', (socket, data: string) => {
 APIMsgHandler.on('ROOMID', (socket: WebSocket) => {
   if(AuthedScoketSet.has(socket)) {
     socket.send(JSON.stringify({
-      msg: 'ROOMID',
+      cmd: 'ROOMID',
       data: config.room_id
     }));
   }
