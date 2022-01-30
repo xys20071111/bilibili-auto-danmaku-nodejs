@@ -5,6 +5,7 @@ import config from './config';
 import sendDanmake from './sendDanmaku';
 import { getTimeString } from './utils/time';
 
+let skipCount = 0;
 let logFile = fs.createWriteStream(`${getTimeString()}-${config.room_id}.log`)
 const thanksColdDownSet = new Set<string>();
 
@@ -36,6 +37,11 @@ export function receiveDanmaku(data: any) {
 }
 
 export function onLiveStart() {
+  if(skipCount != 1){
+    skipCount ++;
+    return;
+  }
+  skipCount = 0;
   logFile.close()
   sendDanmake({ msg: config.danmakus.live_start })
   logFile = fs.createWriteStream(`${getTimeString()}-${config.room_id}.log`)
