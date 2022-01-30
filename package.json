@@ -4,7 +4,7 @@
   "description": "给B站直播用的弹幕助手，自动感谢礼物",
   "main": "dist/index.js",
   "author": "xys20071111",
-  "license": "MIT",
+  "license": "AGPL-3.0-or-later",
   "private": false,
   "repository": {
     "type": "git",
