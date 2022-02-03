@@ -6,6 +6,7 @@ import { startPlugins } from "./startPlugins";
 
 interface Message {
   cmd: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any
 }
 
@@ -13,29 +14,25 @@ const AuthedScoketSet = new Set<WebSocket>();
 const APIMsgHandler = new EventEmitter();
 
 APIMsgHandler.on('AUTH', (socket: WebSocket, data: string) => {
-  if(data === config.api.token && !AuthedScoketSet.has(socket)) {
+  if (data === config.api.token && !AuthedScoketSet.has(socket)) {
     AuthedScoketSet.add(socket)
-    socket.send(JSON.stringify({cmd: 'AUTH', data: 'AUTHED'}));
-  }else{
-    socket.send(JSON.stringify({cmd: 'AUTH', data: 'FAILED'}));
+    socket.send(JSON.stringify({ cmd: 'AUTH', data: 'AUTHED' }));
+  } else {
+    socket.send(JSON.stringify({ cmd: 'AUTH', data: 'FAILED' }));
   }
 })
 
 APIMsgHandler.on('SEND', (socket, data: string) => {
-  if(AuthedScoketSet.has(socket)) {
-    sendDanmake({
-      msg: data
-    });
-  }
+  sendDanmake({
+    msg: data
+  });
 });
 
 APIMsgHandler.on('ROOMID', (socket: WebSocket) => {
-  if(AuthedScoketSet.has(socket)) {
-    socket.send(JSON.stringify({
-      cmd: 'ROOMID',
-      data: config.room_id
-    }));
-  }
+  socket.send(JSON.stringify({
+    cmd: 'ROOMID',
+    data: config.room_id
+  }));
 });
 
 const wsServer = new Server({
@@ -44,10 +41,13 @@ const wsServer = new Server({
 
 wsServer.on('connection', (socket: WebSocket) => {
   socket.on('message', (rawData: string) => {
-    try{
+    try {
       const msg: Message = JSON.parse(rawData);
+      if(!AuthedScoketSet.has(socket) && msg.cmd !== 'AUTH') {
+        return;
+      }
       APIMsgHandler.emit(msg.cmd, socket, msg.data);
-    } catch(e) {
+    } catch (e) {
       console.log(e);
     }
   });

@@ -7,7 +7,7 @@ import * as https from 'https';
 import { EventEmitter } from 'events';
 import * as zlib from 'zlib';
 import { config } from './config';
-import { AuthedScoketSet } from './APIServer'
+import { wsServer } from './APIServer'
 
 enum DANMAKU_PROTOCOL {
   JSON = 0,
@@ -66,7 +66,7 @@ class DanmakuReceiver extends EventEmitter {
           const authPacket = this.generatePacket(1, 7, data);
           if (this.socket) {
             this.socket.send(authPacket);
-            console.log('auth');
+            console.log('成功连接到弹幕服务器, 发送身份验证包');
           }
         });
       });
@@ -95,7 +95,6 @@ class DanmakuReceiver extends EventEmitter {
     const packetType = msg.readInt32BE(8);
     const packetPayload: Buffer = msg.slice(16);
     let jsonData: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     switch (packetType) {
       case DANMAKU_TYPE.HEARTBEAT_REPLY:
         console.log('收到心跳包回应');
@@ -113,11 +112,9 @@ class DanmakuReceiver extends EventEmitter {
       case DANMAKU_TYPE.DATA:
         switch (packetProtocol) {
           case DANMAKU_PROTOCOL.JSON:
+			// 这些数据大都没用，但还是留着吧
             jsonData = JSON.parse(packetPayload.toString('utf-8'));
             this.emit(jsonData.cmd, jsonData.data);
-            AuthedScoketSet.forEach((socket: WebSocket) => {
-              socket.send(JSON.stringify({ cmd: jsonData.cmd, data: jsonData.data }))
-            })
             break;
           case DANMAKU_PROTOCOL.BROTLI:
             zlib.brotliDecompress(packetPayload, (err, result) => {
@@ -131,8 +128,8 @@ class DanmakuReceiver extends EventEmitter {
                 const jsonString = packetData.toString('utf8');
                 const data = JSON.parse(jsonString);
                 this.emit(data.cmd, (data.info || data.data));
-                AuthedScoketSet.forEach((socket: WebSocket) => {
-                  socket.send(JSON.stringify({ cmd: data.cmd, data: data.info || data.data }))
+                wsServer.clients.forEach((socket: WebSocket) => {
+                  socket.send(JSON.stringify({ cmd: data.cmd, data: data.info || data.data }));
                 })
                 offset += length;
               }
