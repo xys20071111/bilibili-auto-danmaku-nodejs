@@ -43,7 +43,7 @@ wsServer.on('connection', (socket: WebSocket) => {
   socket.on('message', (rawData: string) => {
     try {
       const msg: Message = JSON.parse(rawData);
-      if(!AuthedScoketSet.has(socket) && msg.cmd !== 'AUTH') {
+      if (!AuthedScoketSet.has(socket) && msg.cmd !== 'AUTH') {
         return;
       }
       APIMsgHandler.emit(msg.cmd, socket, msg.data);
@@ -59,5 +59,5 @@ wsServer.on('connection', (socket: WebSocket) => {
 
 startPlugins();
 
-export default AuthedScoketSet
-export { AuthedScoketSet, APIMsgHandler, wsServer }
+export default AuthedScoketSet;
+export { AuthedScoketSet, APIMsgHandler, wsServer };

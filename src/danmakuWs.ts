@@ -6,7 +6,7 @@ import { WebSocket } from 'ws';
 import * as https from 'https';
 import { EventEmitter } from 'events';
 import * as zlib from 'zlib';
-import { config } from './config';
+import config from './config';
 import { wsServer } from './APIServer'
 
 enum DANMAKU_PROTOCOL {
@@ -97,7 +97,7 @@ class DanmakuReceiver extends EventEmitter {
     let jsonData: any;
     switch (packetType) {
       case DANMAKU_TYPE.HEARTBEAT_REPLY:
-        console.log('收到心跳包回应');
+        // 心跳包，不做处理
         break;
       case DANMAKU_TYPE.AUTH_REPLY:
         console.log('通过认证');

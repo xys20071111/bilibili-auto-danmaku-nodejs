@@ -31,7 +31,6 @@ interface ConfigStruct {
   api: api_config
 }
 
-const config: ConfigStruct = JSON.parse(readFileSync(process.argv[2]).toString('utf8'))
+const config: ConfigStruct = JSON.parse(readFileSync(process.argv[2]).toString('utf8'));
 
-export { config }
-export default config
+export default config;
