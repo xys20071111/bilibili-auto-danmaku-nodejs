@@ -35,6 +35,7 @@ class DanmakuReceiver extends EventEmitter {
   }
 
   public async connect() {
+    // 请求弹幕服务器地址
     const request = https.request(`https://api.live.bilibili.com/room/v1/Danmu/getConf?room_id=${this.roomId}&platform=pc&player=web`, {
       method: 'GET',
       headers: {
@@ -53,6 +54,7 @@ class DanmakuReceiver extends EventEmitter {
       response.on('data', (chunk) => { rawData += chunk; });
       response.on('end', () => {
         const parsedData = JSON.parse(rawData);
+        // 连接弹幕服务器
         this.socket = new WebSocket(`wss://${parsedData.data.host_server_list[0].host}:${parsedData.data.host_server_list[0].wss_port}/sub`);
         this.socket.on('message', this.danmakeProcesser.bind(this));
         this.socket.on('close', () => { 
@@ -60,6 +62,7 @@ class DanmakuReceiver extends EventEmitter {
           this.emit('close');
         });
         this.socket.on('open', async () => {
+          // 生成并发送验证包
           const data = JSON.stringify({
             roomid: parseInt(this.roomId.toString(), 10), protover: 3, platform: 'web', uid: config.verify.uid, key: parsedData.data.token,
           });
@@ -90,7 +93,7 @@ class DanmakuReceiver extends EventEmitter {
   }
 
   private danmakeProcesser(msg: Buffer) {
-    // TODO: 弹幕事件处理
+    // 弹幕事件处理
     const packetProtocol = msg.readInt16BE(6);
     const packetType = msg.readInt32BE(8);
     const packetPayload: Buffer = msg.slice(16);
@@ -101,6 +104,7 @@ class DanmakuReceiver extends EventEmitter {
         break;
       case DANMAKU_TYPE.AUTH_REPLY:
         console.log('通过认证');
+        // 认证通过，每30秒发一次心跳包
         setInterval(() => {
           const heartbeatPayload = '陈睿你妈死了';
           if (this.socket) {
@@ -119,7 +123,7 @@ class DanmakuReceiver extends EventEmitter {
           case DANMAKU_PROTOCOL.BROTLI:
             zlib.brotliDecompress(packetPayload, (err, result) => {
               if (err) {
-                throw err;
+                console.warn(err);
               }
               let offset = 0;
               while (offset < result.length) {
