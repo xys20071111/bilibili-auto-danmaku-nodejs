@@ -48,11 +48,11 @@ export function onLiveStart() {
   logger = new Console({
     stdout: logFile
   });
-  logger.log(`${getTimeString} 直播开始`);
+  logger.log(`${getTimeString()} 直播开始`);
 }
 
 export function onLiveEnd() {
-  logger.log(`${getTimeString} 直播结束`);
+  logger.log(`${getTimeString()} 直播结束`);
   sendDanmake({ msg: config.danmakus.live_end });
 }
 
