@@ -23,9 +23,11 @@ APIMsgHandler.on('AUTH', (socket: WebSocket, data: string) => {
 })
 
 APIMsgHandler.on('SEND', (socket, data: string) => {
-  sendDanmake({
-    msg: data
-  });
+  if (AuthedScoketSet.has(socket)) {
+    sendDanmake({
+      msg: data
+    });
+  }
 });
 
 APIMsgHandler.on('ROOMID', (socket: WebSocket) => {
