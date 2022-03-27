@@ -1,13 +1,13 @@
 import DanmakuReceiver from "./danmakuWs"
 import config from "./config";
 import { onGraud, onLiveStart, onSuperChat, onTotalGift, receiveDanmaku, receiveGift } from "./danmakuEventsCallback";
-
+import { printLog } from "./utils";
 
 const receiver = new DanmakuReceiver(config.room_id);
 receiver.connect();
 
 receiver.on('connected', () => {
-  console.log("已连接到弹幕服务器");
+  printLog("已连接到弹幕服务器");
 })
 
 receiver.on('close', () => {

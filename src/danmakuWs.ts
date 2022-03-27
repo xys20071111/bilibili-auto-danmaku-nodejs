@@ -8,6 +8,7 @@ import { EventEmitter } from 'events';
 import * as zlib from 'zlib';
 import config from './config';
 import { wsServer } from './APIServer'
+import { printLog } from "./utils";
 
 enum DANMAKU_PROTOCOL {
   JSON = 0,
@@ -58,7 +59,7 @@ class DanmakuReceiver extends EventEmitter {
         this.socket = new WebSocket(`wss://${parsedData.data.host_server_list[0].host}:${parsedData.data.host_server_list[0].wss_port}/sub`);
         this.socket.on('message', this.danmakeProcesser.bind(this));
         this.socket.on('close', () => { 
-          console.log('掉线了');
+          printLog('掉线了');
           this.emit('close');
         });
         this.socket.on('open', async () => {
@@ -69,7 +70,7 @@ class DanmakuReceiver extends EventEmitter {
           const authPacket = this.generatePacket(1, 7, data);
           if (this.socket) {
             this.socket.send(authPacket);
-            console.log('成功连接到弹幕服务器, 发送身份验证包');
+            printLog('成功连接到弹幕服务器, 发送身份验证包');
           }
         });
       });
@@ -103,7 +104,7 @@ class DanmakuReceiver extends EventEmitter {
         // 心跳包，不做处理
         break;
       case DANMAKU_TYPE.AUTH_REPLY:
-        console.log('通过认证');
+        printLog('通过认证');
         // 认证通过，每30秒发一次心跳包
         setInterval(() => {
           const heartbeatPayload = '陈睿你妈死了';
@@ -144,7 +145,7 @@ class DanmakuReceiver extends EventEmitter {
         }
         break;
       default:
-        console.log('什么鬼，没见过这种包');
+        printLog('什么鬼，没见过这种包');
     }
   }
 
