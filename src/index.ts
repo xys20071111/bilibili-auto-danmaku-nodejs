@@ -1,4 +1,4 @@
-import DanmakuReceiver from "./danmakuWs"
+import DanmakuReceiver from "./danmakuReceiver"
 import config from "./config";
 import { onGraud, onLiveStart, onSuperChat, onTotalGift, receiveDanmaku, receiveGift } from "./danmakuEventsCallback";
 import { printLog } from "./utils";
