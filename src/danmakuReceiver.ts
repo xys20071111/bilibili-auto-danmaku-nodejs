@@ -57,7 +57,7 @@ class DanmakuReceiver extends EventEmitter {
         const parsedData = JSON.parse(rawData);
         // 连接弹幕服务器
         this.socket = new WebSocket(`wss://${parsedData.data.host_server_list[0].host}:${parsedData.data.host_server_list[0].wss_port}/sub`);
-        this.socket.on('message', this.danmakeProcesser.bind(this));
+        this.socket.on('message', this.danmakuProcesser.bind(this));
         this.socket.on('close', () => { 
           printLog('掉线了');
           this.emit('close');
@@ -79,8 +79,9 @@ class DanmakuReceiver extends EventEmitter {
   }
 
   private generatePacket(protocol: number, type: number, payload: string | Buffer): Buffer {
-    let packet = Buffer.alloc(16 + Buffer.byteLength(payload));
-    packet.writeInt32BE(16 + Buffer.byteLength(payload), 0); // 总长度
+    const packetLength = 16 + Buffer.byteLength(payload, 'utf-8');
+    let packet = Buffer.alloc(packetLength);
+    packet.writeInt32BE(packetLength, 0); // 总长度
     packet.writeInt16BE(16, 4); // 头长度
     packet.writeUInt16BE(protocol, 6); // 协议类型
     packet.writeUInt32BE(type, 8); // 包类型
@@ -93,7 +94,7 @@ class DanmakuReceiver extends EventEmitter {
     return packet;
   }
 
-  private danmakeProcesser(msg: Buffer) {
+  private danmakuProcesser(msg: Buffer) {
     // 弹幕事件处理
     const packetProtocol = msg.readInt16BE(6);
     const packetType = msg.readInt32BE(8);
@@ -130,10 +131,9 @@ class DanmakuReceiver extends EventEmitter {
               while (offset < result.length) {
                 const length = result.readUInt32BE(offset);
                 const packetData = result.slice(offset + 16, offset + length);
-                const jsonString = packetData.toString('utf8');
-                const data = JSON.parse(jsonString);
+                const data = JSON.parse(packetData.toString('utf8'));
                 this.emit(data.cmd, (data.info || data.data));
-                wsServer.clients.forEach((socket: WebSocket) => {
+                wsServer.clients.forEach((socket) => {
                   socket.send(JSON.stringify({ cmd: data.cmd, data: data.info || data.data }));
                 })
                 offset += length;
