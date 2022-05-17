@@ -16,13 +16,13 @@ export interface DanmakuStruct {
   csrf_token?: string
 }
 
-export default function sendDanmake(danmaku: DanmakuStruct) {
+export default function sendDanmaku(danmaku: DanmakuStruct) {
   if (danmaku.msg.length > 19) {
-    sendDanmake({
+    sendDanmaku({
       msg: danmaku.msg.slice(0, 15)
     })
     setTimeout(() => {
-      sendDanmake({
+      sendDanmaku({
         msg: danmaku.msg.slice(15, danmaku.msg.length)
       })
     }, 2000)

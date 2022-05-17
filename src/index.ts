@@ -1,6 +1,6 @@
 import DanmakuReceiver from "./danmakuReceiver"
 import config from "./config";
-import { onGraud, onLiveStart, onSuperChat, onTotalGift, receiveDanmaku, receiveGift } from "./danmakuEventsCallback";
+import { onGraud, onLiveEnd, onLiveStart, onSuperChat, onTotalGift, receiveDanmaku, receiveGift } from "./danmakuEventsCallback";
 import { printLog } from "./utils";
 
 const receiver = new DanmakuReceiver(config.room_id);
@@ -16,6 +16,7 @@ receiver.on('close', () => {
 
 receiver.on('SEND_GIFT', receiveGift);
 receiver.on('LIVE', onLiveStart);
+receiver.on('PREPARING', onLiveEnd);
 receiver.on('DANMU_MSG', receiveDanmaku);
 receiver.on('COMBO_SEND', onTotalGift);
 receiver.on('GUARD_BUY', onGraud);
