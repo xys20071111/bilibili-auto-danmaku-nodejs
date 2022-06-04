@@ -132,9 +132,10 @@ class DanmakuReceiver extends EventEmitter {
                 const length = result.readUInt32BE(offset);
                 const packetData = result.slice(offset + 16, offset + length);
                 const data = JSON.parse(packetData.toString('utf8'));
-                this.emit(data.cmd, (data.info || data.data));
+                const cmd = data.cmd.split(':')[0]
+                this.emit(cmd, (data.info || data.data));
                 wsServer.clients.forEach((socket) => {
-                  socket.send(JSON.stringify({ cmd: data.cmd, data: data.info || data.data }));
+                  socket.send(JSON.stringify({ cmd, data: data.info || data.data }));
                 })
                 offset += length;
               }
