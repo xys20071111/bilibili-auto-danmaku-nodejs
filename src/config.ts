@@ -1,4 +1,4 @@
-import { readFileSync } from "fs";
+import { readFileSync } from 'fs'
 
 interface DanmakuTemplate {
   live_start: string
@@ -31,6 +31,6 @@ interface ConfigStruct {
   api: api_config
 }
 
-const config: ConfigStruct = JSON.parse(readFileSync(process.argv[2]).toString('utf8'));
+const config: ConfigStruct = JSON.parse(readFileSync(process.argv[2]).toString('utf8'))
 
-export default config;
+export default config
