@@ -29,6 +29,7 @@ interface ConfigStruct {
   cold_down_time: number
   advertiseing_cold_down: number
   api: api_config
+  free_gift_action: boolean
 }
 
 const config: ConfigStruct = JSON.parse(readFileSync(process.argv[2]).toString('utf8'))

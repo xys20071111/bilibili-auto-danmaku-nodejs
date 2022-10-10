@@ -21,5 +21,6 @@
         "unwelcome": "{name}入场，房管注意禁言",
         "advertisment":"～给主播点个关注吧～"
     },
-    "advertising_cold_down":500
+    "advertising_cold_down":500,
+    "free_gift_action": false
 }
