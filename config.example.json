@@ -22,5 +22,8 @@
         "advertisment":"～给主播点个关注吧～"
     },
     "advertising_cold_down":500,
-    "free_gift_action": false
+    "free_gift_action": false,
+    "disable_gift_action": false,
+    "disable_super_chat_action": false,
+    "disable_graud_action": false
 }

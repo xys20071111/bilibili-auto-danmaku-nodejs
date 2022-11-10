@@ -14,10 +14,17 @@ receiver.on('close', () => {
 	receiver.connect()
 })
 
-receiver.on('SEND_GIFT', receiveGift)
+if (!config.disable_gift_action) {
+	receiver.on('SEND_GIFT', receiveGift)
+	receiver.on('COMBO_SEND', onTotalGift)
+}
+if (!config.disable_super_chat_action) {
+	receiver.on('GUARD_BUY', onGraud)
+}
+if (!config.disable_super_chat_action) {
+	receiver.on('SUPER_CHAT_MESSAGE', onSuperChat)
+}
+
 receiver.on('LIVE', onLiveStart)
 receiver.on('PREPARING', onLiveEnd)
 receiver.on('DANMU_MSG', receiveDanmaku)
-receiver.on('COMBO_SEND', onTotalGift)
-receiver.on('GUARD_BUY', onGraud)
-receiver.on('SUPER_CHAT_MESSAGE', onSuperChat)
